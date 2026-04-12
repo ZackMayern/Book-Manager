@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+	<div class="container-fluid">
+		<span class="navbar-brand"><img style="color: white;" src="https://images.seeklogo.com/logo-png/13/1/the-black-book-logo-png_seeklogo-138130.png" alt="management-icon.png" height="25px"></span>
+		<button
+			class="navbar-toggler"
+			type="button"
+			aria-controls="navbarContent"
+			[attr.aria-expanded]="!collapsed"
+			aria-label="Toggle navigation"
+			(click)="collapsed = !collapsed"
+		>
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="navbar-collapse" [class.collapse]="collapsed" id="navbarContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item"><a class="nav-link" href="/dashboard">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/requests">Requests</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+      </ul>
+		</div>
+
+    <div class="d-flex">
+      @if(isLoggedIn$ | async) {
+        <div class="d-flex align-items-center">
+          <div class="text-center">
+            @let user = (currentUser$ | async);
+            @if(user) {
+              <span class="text-gray d-block">{{ user.firstName }} {{ user.lastName }}</span>
+            }
+            <button class="btn btn-outline-danger me-2" type="button" (click)="logout()">Log Out</button>
+          </div>
+        </div>
+      }
+      @else {
+        <button class="btn btn-outline-success me-2" type="button" (click)="navigateToLogin()">Login</button>
+        <button class="btn btn-outline-primary" type="button" (click)="navigateToSignUp()">Sign Up</button>
+      }
+    </div>
+	</div>
+</nav>

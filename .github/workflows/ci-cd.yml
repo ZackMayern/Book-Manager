@@ -1,0 +1,172 @@
+name: CI-CD Pipeline
+
+on:
+  pull_request:
+    types: [opened]
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Operation to run
+        required: true
+        default: deploy
+        type: choice
+        options:
+          - deploy
+          - shutdown
+      aws_region:
+        description: AWS Region
+        required: true
+        default: ap-south-1
+        type: string
+      tf_state_bucket:
+        description: S3 bucket for Terraform state
+        required: true
+        type: string
+      tf_state_key:
+        description: S3 object key for Terraform state
+        required: true
+        default: book-manager/prod/terraform.tfstate
+        type: string
+      ecr_repository_name:
+        description: ECR repository name
+        required: true
+        type: string
+      eks_cluster_name:
+        description: EKS cluster name
+        required: true
+        type: string
+      ecs_cluster_name:
+        description: Optional ECS cluster name to delete during shutdown
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-checks:
+    if: github.event_name == 'pull_request'
+    name: PR Build Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Frontend Build (Angular)
+        run: bash .github/workflows/scripts/frontend-build.sh
+
+      - name: Backend Build (.NET)
+        run: bash .github/workflows/scripts/backend-build.sh
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'deploy'
+    name: Deploy to AWS (ECR + EKS)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      AWS_REGION: ${{ inputs.aws_region }}
+      TF_STATE_BUCKET: ${{ inputs.tf_state_bucket }}
+      TF_STATE_KEY: ${{ inputs.tf_state_key }}
+      ECR_REPOSITORY_NAME: ${{ inputs.ecr_repository_name }}
+      EKS_CLUSTER_NAME: ${{ inputs.eks_cluster_name }}
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Configure AWS Credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: bash .github/workflows/scripts/configure-aws-static-creds.sh
+
+      - name: Install Terraform
+        run: bash .github/workflows/scripts/install-terraform.sh
+
+      - name: Install kubectl
+        run: bash .github/workflows/scripts/install-kubectl.sh
+
+      - name: Ensure Terraform State Backend
+        run: bash .github/workflows/scripts/ensure-tfstate-backend.sh
+
+      - name: Terraform Init and Plan
+        run: bash .github/workflows/scripts/terraform-plan.sh
+
+      - name: Terraform Apply
+        run: bash .github/workflows/scripts/terraform-apply.sh
+
+      - name: Build Backend Docker Image
+        env:
+          IMAGE_TAG: ${{ github.run_number }}
+        run: bash .github/workflows/scripts/docker-build.sh
+
+      - name: Test Docker Image
+        env:
+          IMAGE_TAG: ${{ github.run_number }}
+        run: bash .github/workflows/scripts/docker-test.sh
+
+      - name: Login to ECR
+        run: bash .github/workflows/scripts/ecr-login.sh
+
+      - name: Push Docker Image to ECR
+        env:
+          IMAGE_TAG: ${{ github.run_number }}
+        run: bash .github/workflows/scripts/ecr-push.sh
+
+      - name: Configure kubectl for EKS
+        run: bash .github/workflows/scripts/eks-configure-kubectl.sh
+
+      - name: Deploy to EKS (2 replicas)
+        env:
+          IMAGE_URI: ${{ env.IMAGE_URI }}
+        run: bash .github/workflows/scripts/eks-deploy.sh
+
+  shutdown:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'shutdown'
+    name: Shutdown AWS Resources
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      AWS_REGION: ${{ inputs.aws_region }}
+      TF_STATE_BUCKET: ${{ inputs.tf_state_bucket }}
+      TF_STATE_KEY: ${{ inputs.tf_state_key }}
+      ECR_REPOSITORY_NAME: ${{ inputs.ecr_repository_name }}
+      EKS_CLUSTER_NAME: ${{ inputs.eks_cluster_name }}
+      ECS_CLUSTER_NAME: ${{ inputs.ecs_cluster_name }}
+      TF_IN_AUTOMATION: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+
+      - name: Configure AWS Credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: bash .github/workflows/scripts/configure-aws-static-creds.sh
+
+      - name: Install Terraform
+        run: bash .github/workflows/scripts/install-terraform.sh
+
+      - name: Ensure Terraform State Backend
+        run: bash .github/workflows/scripts/ensure-tfstate-backend.sh
+
+      - name: Terraform Destroy (ECR and EKS)
+        run: bash .github/workflows/scripts/terraform-destroy.sh
+
+      - name: Fallback Cleanup for Existing EKS and ECR
+        run: bash .github/workflows/scripts/fallback-cleanup-eks-ecr.sh
+
+      - name: Optional ECS Cleanup
+        if: inputs.ecs_cluster_name != ''
+        run: bash .github/workflows/scripts/ecs-cleanup.sh
