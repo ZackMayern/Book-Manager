@@ -2,7 +2,7 @@ name: CI-CD Pipeline
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize, reopened]
     branches: [develop]
   workflow_dispatch:
     inputs:
