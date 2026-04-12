@@ -1,0 +1,1 @@
+export type ConditionType = 'New' | 'Used' | 'Damaged';

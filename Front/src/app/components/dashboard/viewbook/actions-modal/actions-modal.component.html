@@ -1,0 +1,64 @@
+<div class="modal-content">
+  <div class="modal-header">
+    @if (this.actionType === 'Add') {
+      <h5 class="modal-title">Add a new book</h5>
+    }
+    @if (this.actionType === 'Update'){
+      <h5 class="modal-title">Edit {{modalTitle}}</h5>
+    }
+    @if (this.actionType === 'Delete'){
+      <h5 class="modal-title">Delete {{modalTitle}}?</h5>
+    }
+    <button class="btn d-flex position-absolute end-0" (click)="close()">
+      <i class="material-icons icon-sm">close</i>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form class="form" [formGroup]="actionsForm" (ngSubmit)="submit()">
+      <div class="mb-1">
+        <label class="pb-1" for="publisher">Publisher</label>
+        <input type="text" class="form-control" formControlName="publisher" [value]="selectedData?.publisher">
+      </div>
+      <div class="mb-1">
+        <label class="pb-1" for="title">Title</label>
+        <input type="text" class="form-control" formControlName="title" [value]="selectedData?.title">
+      </div>
+      <div class="mb-1">
+        <label class="pb-1" for="author">Author</label>
+        <input type="text" class="form-control" formControlName="author" [value]="selectedData?.author">
+      </div>
+      <div class="mb-1">
+        <label class="pb-1" for="title">Title</label>
+        <input type="text" class="form-control" formControlName="title" [value]="selectedData?.title">
+      </div>
+      <div class="mb-1">
+        <label class="pb-1" for="yearOfPublication">Year Of Publishing</label>
+        <input type="text" class="form-control" formControlName="yearOfPublication" [value]="selectedData?.yearOfPublication">
+      </div>
+      <div class="mb-1">
+        <label class="pb-1" for="bookCount">Book Count</label>
+        <input type="number" class="form-control" formControlName="bookCount" [value]="selectedData?.bookCount">
+      </div>
+      <div class="mb-1">
+        <label class="pb-1" for="condition">Condition</label>
+        <select class="form-control" formControlName="condition">
+          @for (condition of conditions; track condition) {
+            <option [value]="condition">{{condition}}</option>
+          }
+        </select>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="close()">Close</button>
+    @if(this.actionType === 'Add'){
+      <button type="button" class="btn btn-success" (click)="submit()" [disabled]="waitingForResponse">Add</button>
+    }
+    @if(this.actionType === 'Update'){
+      <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="waitingForResponse || this.actionsForm.invalid || !this.actionsForm.touched">Save</button>
+    }
+    @if(this.actionType === 'Delete'){
+      <button type="button" class="btn btn-danger" (click)="submit()" [disabled]="waitingForResponse">Delete</button>
+    }
+  </div>
+</div>

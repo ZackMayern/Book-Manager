@@ -1,0 +1,18 @@
+<h3 class="text-center">Admin Dashboard</h3>
+<div class="row p-3">
+  <div class="col">
+    Total Books: {{this.booksCount$ | async}}
+  </div>
+  <div class="col">
+    Total New Books: {{this.newBooksCount$ | async}}
+  </div>
+  <div class="col">
+    Total Used Books: {{this.usedBooksCount$ | async}}
+  </div>
+  <div class="col">
+    Total Damaged Books: {{this.damagedBooksCount$ | async}}
+  </div>
+  <div class="col">
+    Total Missing Books: {{this.missingBooksCount$ | async}}
+  </div>
+</div>

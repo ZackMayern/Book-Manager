@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: book-manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-manager-api
+  namespace: book-manager
+  labels:
+    app: book-manager-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: book-manager-api
+  template:
+    metadata:
+      labels:
+        app: book-manager-api
+    spec:
+      containers:
+        - name: book-manager-api
+          image: ${IMAGE_URI}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

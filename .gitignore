@@ -1,0 +1,67 @@
+# ------------------------------------------------------------
+# Workspace-wide ignores (merged from Back, Front, and Tools)
+# ------------------------------------------------------------
+
+# Common build artifacts
+**/bin/
+**/obj/
+**/cache/
+
+# IDE/editor folders and files
+**/.vs/
+**/.idea/
+**/*.user
+.github/agents
+
+# -----------------
+# Front (Angular)
+# -----------------
+
+# Compiled output
+/Front/dist
+/Front/tmp
+/Front/out-tsc
+/Front/bazel-out
+
+# Node
+/Front/node_modules
+/Front/npm-debug.log
+/Front/yarn-error.log
+
+# IDEs and editors
+/Front/.idea/
+/Front/.project
+/Front/.classpath
+/Front/.c9/
+/Front/*.launch
+/Front/.settings/
+/Front/*.sublime-workspace
+
+# Visual Studio Code
+/Front/.vscode/
+/Front/.history/*
+
+# Miscellaneous
+/Front/.angular/cache
+/Front/.sass-cache/
+/Front/connect.lock
+/Front/coverage
+/Front/libpeerconnection.log
+/Front/testem.log
+/Front/typings
+/infra/terraform/.terraform*
+
+# -----------------
+# Back (.NET API)
+# -----------------
+
+# Environment and configuration files under Back
+/Back/**/appsettings.json
+/Back/**/appsettings.Development.json
+/Back/**/appsettings.Production.json
+/Back/**/.env
+/Back/**/.env.local
+
+# System files
+**/.DS_Store
+**/Thumbs.db
