@@ -35,7 +35,7 @@ locals {
 resource "aws_ecr_repository" "app" {
   count = var.create_ecr ? 1 : 0
 
-  name                 = var.ecr_repository_name
+  name                 = lower(var.ecr_repository_name)
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 
@@ -209,7 +209,7 @@ resource "aws_eks_node_group" "app" {
     aws_subnet.eks_public_a[0].id,
     aws_subnet.eks_public_b[0].id
   ]
-  instance_types = ["t3.medium"]
+  instance_types = ["t3.small"]
 
   scaling_config {
     desired_size = 2
