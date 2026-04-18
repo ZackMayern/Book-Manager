@@ -129,6 +129,11 @@ jobs:
           IMAGE_TAG: ${{ github.run_number }}
         run: bash .github/workflows/scripts/docker-build.sh
 
+      - name: Build Frontend Docker Image (Angular + Nginx)
+        env:
+          IMAGE_TAG: ${{ github.run_number }}
+        run: bash .github/workflows/scripts/frontend-docker-build.sh
+
       - name: Test Docker Image
         timeout-minutes: 2
         env:
@@ -143,12 +148,18 @@ jobs:
           IMAGE_TAG: ${{ github.run_number }}
         run: bash .github/workflows/scripts/ecr-push.sh
 
+      - name: Push Frontend Docker Image to ECR
+        env:
+          IMAGE_TAG: ${{ github.run_number }}
+        run: bash .github/workflows/scripts/ecr-push-frontend.sh
+
       - name: Configure kubectl for EKS
         run: bash .github/workflows/scripts/eks-configure-kubectl.sh
 
       - name: Deploy to EKS (2 replicas)
         env:
           IMAGE_URI: ${{ env.IMAGE_URI }}
+          FRONTEND_IMAGE_URI: ${{ env.FRONTEND_IMAGE_URI }}
         run: bash .github/workflows/scripts/eks-deploy.sh
 
   shutdown:

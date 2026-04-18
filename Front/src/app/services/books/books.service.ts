@@ -9,7 +9,7 @@ import { ArgumentNullException } from '../../helpers/argument-helper';
   providedIn: 'root'
 })
 export class BooksService {
-  private readonly url = 'api/books';
+  private readonly url = '/api/books';
   private readonly httpClient: HttpClient = inject(HttpClient);
   
   public getAll(): Observable<Book[]> {

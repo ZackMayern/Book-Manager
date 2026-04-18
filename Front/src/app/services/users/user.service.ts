@@ -10,8 +10,8 @@ import { AuthService } from '../auth/auth.service';
   providedIn: 'root'
 })
 export class UserService {
-  private readonly userUrl = 'api/users';
-  private readonly authUrl = 'api/auth';
+  private readonly userUrl = '/api/users';
+  private readonly authUrl = '/api/auth';
   private readonly httpClient: HttpClient = inject(HttpClient);
   private readonly authService: AuthService = inject(AuthService);
   
