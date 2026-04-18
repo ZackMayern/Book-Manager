@@ -130,6 +130,7 @@ jobs:
         run: bash .github/workflows/scripts/docker-build.sh
 
       - name: Test Docker Image
+        timeout-minutes: 2
         env:
           IMAGE_TAG: ${{ github.run_number }}
         run: bash .github/workflows/scripts/docker-test.sh
@@ -151,7 +152,8 @@ jobs:
         run: bash .github/workflows/scripts/eks-deploy.sh
 
   shutdown:
-    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'shutdown'
+    needs: [deploy]
+    if: always() && github.event_name == 'workflow_dispatch' && (inputs.operation == 'shutdown' || (inputs.operation == 'deploy' && needs.deploy.result == 'failure'))
     name: Shutdown AWS Resources
     runs-on: ubuntu-latest
     permissions:

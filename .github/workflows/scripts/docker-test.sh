@@ -3,4 +3,5 @@ set -euo pipefail
 
 IMAGE_TAG=${IMAGE_TAG:-$GITHUB_RUN_NUMBER}
 
-docker run --rm book-manager-api:$IMAGE_TAG sh -c "test -f /app/Back.Api.dll"
+# Override the image ENTRYPOINT so this remains a quick, non-blocking smoke test.
+docker run --rm --entrypoint sh book-manager-api:$IMAGE_TAG -c "test -f /app/Back.Api.dll"
