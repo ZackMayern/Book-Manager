@@ -99,6 +99,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: bash .github/workflows/scripts/configure-aws-static-creds.sh
 
+      - name: Install kubectl
+        run: bash .github/workflows/scripts/install-kubectl.sh
+
+      - name: Pre-destroy Kubernetes and Load Balancer Cleanup
+        run: bash .github/workflows/scripts/pre-destroy-k8s-cleanup.sh
+
       - name: Install Terraform
         run: bash .github/workflows/scripts/install-terraform.sh
 
@@ -187,6 +193,12 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: bash .github/workflows/scripts/configure-aws-static-creds.sh
+
+      - name: Install kubectl
+        run: bash .github/workflows/scripts/install-kubectl.sh
+
+      - name: Pre-destroy Kubernetes and Load Balancer Cleanup
+        run: bash .github/workflows/scripts/pre-destroy-k8s-cleanup.sh
 
       - name: Install Terraform
         run: bash .github/workflows/scripts/install-terraform.sh
