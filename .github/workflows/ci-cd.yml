@@ -59,6 +59,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
+      - name: Setup appsettings.json
+        env:
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          MONGODB_ENCRYPTED_CONNECTION_STRING: ${{ secrets.MONGODB_ENCRYPTED_CONNECTION_STRING }}
+          MONGODB_ENCRYPTED_DATABASE_NAME: ${{ secrets.MONGODB_ENCRYPTED_DATABASE_NAME }}
+          SUPABASE_ENCRYPTED_CONNECTION_STRING: ${{ secrets.SUPABASE_ENCRYPTED_CONNECTION_STRING }}
+          SUPABASE_ENCRYPTED_API_KEY: ${{ secrets.SUPABASE_ENCRYPTED_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: bash .github/workflows/scripts/setup-appsettings.sh
+
       - name: Frontend Build (Angular)
         run: bash .github/workflows/scripts/frontend-build.sh
 
@@ -94,6 +104,16 @@ jobs:
 
       - name: Install kubectl
         run: bash .github/workflows/scripts/install-kubectl.sh
+
+      - name: Setup appsettings.json
+        env:
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          MONGODB_ENCRYPTED_CONNECTION_STRING: ${{ secrets.MONGODB_ENCRYPTED_CONNECTION_STRING }}
+          MONGODB_ENCRYPTED_DATABASE_NAME: ${{ secrets.MONGODB_ENCRYPTED_DATABASE_NAME }}
+          SUPABASE_ENCRYPTED_CONNECTION_STRING: ${{ secrets.SUPABASE_ENCRYPTED_CONNECTION_STRING }}
+          SUPABASE_ENCRYPTED_API_KEY: ${{ secrets.SUPABASE_ENCRYPTED_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: bash .github/workflows/scripts/setup-appsettings.sh
 
       - name: Ensure Terraform State Backend
         run: bash .github/workflows/scripts/ensure-tfstate-backend.sh
