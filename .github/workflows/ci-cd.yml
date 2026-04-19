@@ -79,6 +79,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.operation == 'deploy'
     name: Deploy to AWS (ECR + EKS)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: read
     env:
@@ -102,14 +103,8 @@ jobs:
       - name: Install kubectl
         run: bash .github/workflows/scripts/install-kubectl.sh
 
-      - name: Pre-destroy Kubernetes and Load Balancer Cleanup
-        run: bash .github/workflows/scripts/pre-destroy-k8s-cleanup.sh
-
       - name: Install Terraform
         run: bash .github/workflows/scripts/install-terraform.sh
-
-      - name: Install kubectl
-        run: bash .github/workflows/scripts/install-kubectl.sh
 
       - name: Setup appsettings.json
         env:
@@ -173,6 +168,7 @@ jobs:
     if: always() && github.event_name == 'workflow_dispatch' && (inputs.operation == 'shutdown' || (inputs.operation == 'deploy' && needs.deploy.result == 'failure'))
     name: Shutdown AWS Resources
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     env:
@@ -196,9 +192,6 @@ jobs:
 
       - name: Install kubectl
         run: bash .github/workflows/scripts/install-kubectl.sh
-
-      - name: Pre-destroy Kubernetes and Load Balancer Cleanup
-        run: bash .github/workflows/scripts/pre-destroy-k8s-cleanup.sh
 
       - name: Install Terraform
         run: bash .github/workflows/scripts/install-terraform.sh
