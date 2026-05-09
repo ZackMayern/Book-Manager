@@ -1,14 +1,14 @@
 <div class="container pt-3 d-flex justify-content-center align-items-center">
   <div class="col-md-4 bg-dark p-4 rounded">
     <h3 class="text-white">Login</h3>
-    <form class="form my-4" [formGroup]="loginForm">
+    <form class="form my-4" (onSubmit)="submit()">
       <div class="mb-1">
         <label class="pb-1 text-white" for="email">E-mail</label>
-        <input type="email" class="form-control" formControlName="email">
+        <input type="email" class="form-control" [formField]="loginForm.email">
       </div>
       <div class="mb-1">
         <label class="pb-1 text-white" for="imageLink">Password</label>
-        <input type="password" class="form-control" formControlName="password">
+        <input type="password" class="form-control" [formField]="loginForm.password">
       </div>
     </form>
     <button type="button" class="btn btn-primary" (click)="submit()">Login</button>

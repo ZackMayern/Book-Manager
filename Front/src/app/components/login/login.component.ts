@@ -1,16 +1,16 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { UserService } from '../../services/users/user.service';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { debounceTime, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { User } from '../../models/user';
+import { form, FormField } from '@angular/forms/signals';
+import { Login } from './login';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [FormField],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -19,34 +19,20 @@ export class LoginComponent implements OnInit {
   private readonly router: Router = inject(Router);
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   
-  public loginForm!: FormGroup<{
-    email: FormControl<string>;
-    password: FormControl<string>;
-  }>;
+  private loginFormModel = signal<Login>({
+    email: '',
+    password: '',
+  });
 
-  public createForm(): void {
-    this.loginForm = new FormGroup({
-      email: new FormControl({ value: '', disabled: false }, { nonNullable: true }),
-      password: new FormControl({ value: '', disabled: false }, { nonNullable: true }),
-    });
-  }
+  loginForm = form(this.loginFormModel);
 
   public ngOnInit(): void {
-    this.createForm();
-  }
-
-  private convertFormToModel(): User {
-    return {
-      email: this.loginForm.controls.email.value,
-      password: this.loginForm.controls.password.value,
-    }
   }
 
   public submit(): void {
-    const model = this.convertFormToModel();
-    let http$: Observable<unknown> = this.userService.login(model);
+    let http$: Observable<unknown> = this.userService.login(this.loginFormModel());
 
-    http$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    http$.pipe(takeUntilDestroyed(this.destroyRef), debounceTime(500)).subscribe({
       next: () => {
         console.info(`User login was successful!`);
         this.router.navigate(['/dashboard']);

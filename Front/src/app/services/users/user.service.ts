@@ -24,6 +24,8 @@ export class UserService {
   }
 
   public login(credentials: User): Observable<any> {
+    ArgumentNullException.ThrowIfNullOrUndefined(credentials.email, 'Email is invalid!');
+    ArgumentNullException.ThrowIfNullOrUndefined(credentials.password, 'Password is invalid!');
     return this.httpClient.post<any>(`${this.authUrl}/login`, credentials).pipe(
       tap(res => {
         this.authService.setAuthData(res.value.accessToken, res.value.refreshToken, res.value.user);
