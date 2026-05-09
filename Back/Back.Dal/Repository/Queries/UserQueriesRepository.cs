@@ -14,13 +14,13 @@ public class UserQueriesRepository(IMongoDbService mongoDbService) : IUserQuerie
 
     public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        User? result = await _mongoDbService.GetByIdAsync<User>(Constants.Collection.Users, id, cancellationToken);
+        User result = await _mongoDbService.GetByIdAsync<User>(Constants.Collection.Users, id, cancellationToken);
         return result;
     }
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        User? result = await _mongoDbService.GetByEmailAsync<User>(Constants.Collection.Users, email, cancellationToken);
+        User result = await _mongoDbService.GetByEmailAsync<User>(Constants.Collection.Users, email, cancellationToken);
         return result;
     }
 }

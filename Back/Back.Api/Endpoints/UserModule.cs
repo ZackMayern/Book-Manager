@@ -7,9 +7,9 @@ public class UserModule : IRouterModule
     private const string Url = "api/users";
     public void MapEndpointRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet($"{Url}/get", GetAsync);
-        app.MapPut($"{Url}/update", UpdateAsync);
-        app.MapDelete($"{Url}/delete", DeleteAsync);
+        app.MapGet($"{Url}/get", GetAsync).RequireAuthorization("AdminOnly");
+        app.MapPut($"{Url}/update", UpdateAsync).RequireAuthorization();
+        app.MapDelete($"{Url}/delete", DeleteAsync).RequireAuthorization("AdminOnly");
     }
         
     private async Task<Results<Ok<List<UserDto>>, BadRequest<string>>> GetAsync(

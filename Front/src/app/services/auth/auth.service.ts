@@ -57,6 +57,34 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  public getRoles(): string[] {
+    const token = this.getToken();
+    if (!token) {
+      return [];
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const roleClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+      if (Array.isArray(roleClaim)) {
+        return roleClaim;
+      }
+
+      if (typeof roleClaim === 'string') {
+        return [roleClaim];
+      }
+
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  public hasRole(role: string): boolean {
+    return this.getRoles().includes(role);
+  }
+
   public setAccessToken(token: string): void {
     this.accessToken = token;
     localStorage.setItem('accessToken', token);

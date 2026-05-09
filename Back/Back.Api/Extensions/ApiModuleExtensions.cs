@@ -9,6 +9,8 @@ public static class ApiModuleExtensions
         services.AddScoped<IRouterModule, UserModule>();
         services.AddScoped<IRouterModule, AuthModule>();
         services.AddScoped<IRouterModule, BooksModule>();
+        services.AddScoped<IRouterModule, BorrowModule>();
+        services.AddScoped<IRouterModule, BookRequestsModule>();
         return services;
     }
 }

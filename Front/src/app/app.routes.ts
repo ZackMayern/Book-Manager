@@ -5,11 +5,13 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AuthGuard } from './guard/auth.guard';
 import { NoAuthGuard } from './guard/no-auth.guard';
 import { SignupComponent } from './components/signup/signup.component';
+import { RequestsComponent } from './components/requests/requests.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'signup', component: SignupComponent, canActivate: [NoAuthGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'requests', component: RequestsComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];

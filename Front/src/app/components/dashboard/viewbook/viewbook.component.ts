@@ -1,5 +1,5 @@
 import { Book } from './../../../models/book';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, input, signal } from '@angular/core';
 import { combineLatest, Observable, switchMap, tap, timer } from 'rxjs';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { BooksService } from '../../../services/books/books.service';
@@ -8,6 +8,7 @@ import { AllCommunityModule, ClientSideRowModelModule, DateFilterModule, GridOpt
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActionsModalComponent } from './actions-modal/actions-modal.component';
 import { CommonStoreService } from '../../../store/common-store.service';
+import { BorrowService } from '../../../services/borrow/borrow.service';
 
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
@@ -29,6 +30,9 @@ export class ViewbookComponent {
   private readonly destroyRef: DestroyRef = inject(DestroyRef);
   private readonly booksService: BooksService = inject(BooksService);
   private readonly commonStore: CommonStoreService = inject(CommonStoreService);
+  private readonly borrowService: BorrowService = inject(BorrowService);
+
+  public isAdmin = input<boolean>(false);
 
   private refreshDataX_ = signal<Date | undefined>(undefined);
   public booksDataX_ = toSignal(this.getBooksData(), { initialValue: undefined });
@@ -77,24 +81,45 @@ export class ViewbookComponent {
       type: "fitGridWidth",
     },
     pagination: true,
-    paginationPageSize: 10,
+    paginationAutoPageSize: true,
     detailRowAutoHeight: true
   };
 
   public renderActions(data: Book): HTMLSpanElement {
     const div = document.createElement('div');
-    div.className = 'align-center'
-    const btnUpdate = document.createElement('span');
-    btnUpdate.className = 'px-1'
-    btnUpdate.innerHTML = '<button class="btn btn-flat-secondary p-0"><i class="material-icons icon-sm">mode</i></button>';
-    btnUpdate.addEventListener('click', () => this.showEditModal(data));
-    const btnDelete = document.createElement('span');
-    btnDelete.className = 'px-1'
-    btnDelete.innerHTML = '<button class="btn btn-flat-secondary p-0"><i class="material-icons icon-sm">delete</i></button>';
-    btnDelete.addEventListener('click', () => this.showDeleteModal(data));
-    div.appendChild(btnUpdate);
-    div.appendChild(btnDelete);
+    div.className = 'align-center';
+
+    if (this.isAdmin()) {
+      const btnUpdate = document.createElement('span');
+      btnUpdate.className = 'px-1';
+      btnUpdate.innerHTML = '<button class="btn btn-flat-secondary p-0"><i class="material-icons icon-sm">mode</i></button>';
+      btnUpdate.addEventListener('click', () => this.showEditModal(data));
+      const btnDelete = document.createElement('span');
+      btnDelete.className = 'px-1';
+      btnDelete.innerHTML = '<button class="btn btn-flat-secondary p-0"><i class="material-icons icon-sm">delete</i></button>';
+      btnDelete.addEventListener('click', () => this.showDeleteModal(data));
+      div.appendChild(btnUpdate);
+      div.appendChild(btnDelete);
+      return div;
+    }
+
+    const btnBorrow = document.createElement('span');
+    btnBorrow.className = 'px-1';
+    const isAvailable = (data.bookCount ?? 0) > 0;
+    btnBorrow.innerHTML = `<button class="btn btn-sm btn-outline-info" ${isAvailable ? '' : 'disabled'}>Borrow</button>`;
+    if (isAvailable && data.id) {
+      btnBorrow.addEventListener('click', () => this.borrowBook(data.id!));
+    }
+    div.appendChild(btnBorrow);
+
     return div;
+  }
+
+  public borrowBook(bookId: string): void {
+    this.borrowService.borrow(bookId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => this.refreshDataX_.set(new Date()),
+      error: (error: Error) => console.error(error.message)
+    });
   }
 
   public showAddModal(): void {

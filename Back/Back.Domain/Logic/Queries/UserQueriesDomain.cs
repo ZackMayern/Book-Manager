@@ -23,4 +23,9 @@ public sealed class UserQueriesDomain(IUserQueriesRepository queriesRepository) 
     {
         return await _queriesRepository.GetByIdAsync(id, cancellationToken);
     }
+
+    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await _queriesRepository.GetByEmailAsync(email, cancellationToken);
+    }
 }

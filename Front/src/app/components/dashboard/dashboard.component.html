@@ -1,8 +1,14 @@
 <div class="card m-3 text-bg-dark mb-3">
   <div class="card-body">
     @if(showAdminContent()) {
-      <app-monitoring></app-monitoring>
+      <app-monitoring [isAdmin]="true"></app-monitoring>
     }
-    <app-viewbook></app-viewbook>
+    @if(!showAdminContent()) {
+      <app-monitoring [isAdmin]="false"></app-monitoring>
+    }
+    <app-viewbook [isAdmin]="showAdminContent()"></app-viewbook>
+    @if(!showAdminContent()) {
+      <app-requests></app-requests>
+    }
   </div>
 </div>

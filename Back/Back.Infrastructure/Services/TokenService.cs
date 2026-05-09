@@ -14,13 +14,14 @@ public sealed class TokenService(IConfiguration configuration) : ITokenService
     {
         List<Claim> claims =
         [
-            new(JwtRegisteredClaimNames.Sub, user.Email)
+            new(JwtRegisteredClaimNames.Sub, user.Email),
+            new(ClaimTypes.NameIdentifier, user.Email),
+            new(ClaimTypes.Name, user.Email),
+            new(ClaimTypes.Email, user.Email),
+            new("userId", user.Id)
         ];
 
-        if (user.Roles != null)
-        {
-            claims.AddRange(user.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
-        }
+        claims.AddRange(user.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
         string jwtKey = _configuration.GetSection(nameof(JwtSettings)).GetValue<string>("Key")!;
         SymmetricSecurityKey key = new(

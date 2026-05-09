@@ -13,6 +13,10 @@ public static class DomainInjection
         services.AddScoped<IAuthDomain, AuthDomain>();
         services.AddScoped<IBookQueriesDomain, BookQueriesDomain>();
         services.AddScoped<IBookCommandsDomain, BookCommandsDomain>();
+        services.AddScoped<IBorrowQueriesDomain, BorrowQueriesDomain>();
+        services.AddScoped<IBorrowCommandsDomain, BorrowCommandsDomain>();
+        services.AddScoped<IBookRequestQueriesDomain, BookRequestQueriesDomain>();
+        services.AddScoped<IBookRequestCommandsDomain, BookRequestCommandsDomain>();
 
         return services;
     }

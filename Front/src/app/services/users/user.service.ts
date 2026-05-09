@@ -16,7 +16,7 @@ export class UserService {
   private readonly authService: AuthService = inject(AuthService);
   
   public getAll(): Observable<User[]> {
-    return this.httpClient.get<User[]>(`${this.userUrl}/getAll`).pipe(
+    return this.httpClient.get<User[]>(`${this.userUrl}/get`).pipe(
       catchError(() => {
         return of([] as User[])
       })
@@ -77,7 +77,6 @@ export class UserService {
     ArgumentNullException.ThrowIfNullOrUndefined(userData.firstName, 'firstName is invalid!');
     ArgumentNullException.ThrowIfNullOrUndefined(userData.lastName, 'lastName is invalid!');
     ArgumentNullException.ThrowIfNullOrUndefined(userData.password, 'password is invalid!');
-    ArgumentNullException.ThrowIfNullOrUndefined(userData.isAdmin, 'isAdmin is invalid!');
   }
   
   public validateWhenUpdateOrDelete(userData: User): void {

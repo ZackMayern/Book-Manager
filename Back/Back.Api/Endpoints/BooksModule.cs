@@ -8,10 +8,10 @@ public class BooksModule : IRouterModule
 
     public void MapEndpointRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet($"{Url}/getAll", GetAsync);
-        app.MapPost($"{Url}/add", AddAsync);
-        app.MapPut($"{Url}/update", UpdateAsync);
-        app.MapDelete($"{Url}/delete", DeleteAsync);
+        app.MapGet($"{Url}/getAll", GetAsync).RequireAuthorization();
+        app.MapPost($"{Url}/add", AddAsync).RequireAuthorization("AdminOnly");
+        app.MapPut($"{Url}/update", UpdateAsync).RequireAuthorization("AdminOnly");
+        app.MapDelete($"{Url}/delete", DeleteAsync).RequireAuthorization("AdminOnly");
     }
 
     private static async Task<List<BookDto>> GetAsync(

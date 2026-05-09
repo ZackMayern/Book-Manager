@@ -1,6 +1,6 @@
 ﻿namespace Back.Domain.Models;
 
-public sealed class MongoDBSettings
+public sealed class MongoDbSettings
 {
     public string EncryptedConnectionString { get; set; } = string.Empty;
     public string EncryptedDatabaseName { get; set; } = string.Empty;

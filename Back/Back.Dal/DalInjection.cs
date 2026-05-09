@@ -12,6 +12,10 @@ public static class DalInjection
         services.AddScoped<IUserQueriesRepository, UserQueriesRepository>();
         services.AddScoped<IBookQueriesRepository, BooksQueriesRepository>();
         services.AddScoped<IBookCommandsRepository, BookCommandsRepository>();
+        services.AddScoped<IBorrowQueriesRepository, BorrowQueriesRepository>();
+        services.AddScoped<IBorrowCommandsRepository, BorrowCommandsRepository>();
+        services.AddScoped<IBookRequestQueriesRepository, BookRequestQueriesRepository>();
+        services.AddScoped<IBookRequestCommandsRepository, BookRequestCommandsRepository>();
 
         return services;
     }
