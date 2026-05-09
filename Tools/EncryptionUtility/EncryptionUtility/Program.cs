@@ -83,8 +83,8 @@ namespace EncryptionConsoleApp
                 string encryptedString = EncryptString(plainString, EncryptionKey);
                 Console.WriteLine($"Encrypted  String: {encryptedString}");
 
-                string decryptedString = DecryptString(encryptedString, EncryptionKey);
-                Console.WriteLine($"Decrypted Connection String: {decryptedString}");
+                // string decryptedString = DecryptString(plainString, EncryptionKey);
+                // Console.WriteLine($"Decrypted Connection String: {decryptedString}");
             }
         }
     }
