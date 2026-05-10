@@ -8,6 +8,8 @@ public static class JwtServiceExtensions
 {
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<ITokenService, TokenService>();
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -24,8 +26,10 @@ public static class JwtServiceExtensions
                 };
             });
 
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+        });
 
         return services;
     }
