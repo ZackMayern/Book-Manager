@@ -1,7 +1,17 @@
 .table-wrap {
 	overflow-x: auto;
+	margin-bottom: 2rem;
 }
 
 .badge {
 	font-size: 0.75rem;
 }
+
+.d-flex {
+	display: flex;
+}
+
+.gap-2 {
+	gap: 0.5rem;
+}
+

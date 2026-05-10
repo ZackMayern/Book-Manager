@@ -6,6 +6,7 @@ namespace Back.Domain.Models;
 [Table("BorrowRecords")]
 public class BorrowRecord : BaseModel
 {
+    [PrimaryKey]
     public string Id { get; set; } = Guid.NewGuid().ToString();
     public string UserId { get; set; } = string.Empty;
     public string BookId { get; set; } = string.Empty;

@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { User } from '../../models/user';
+import { AlertHelper } from '../../helpers/alert-helper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly alertHelper: AlertHelper = inject(AlertHelper);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -91,7 +93,12 @@ export class AuthService {
   }
 
   public logout(): void {
-    this.clearAuth();
+    try {
+      this.clearAuth();
+      this.alertHelper.showSuccess('Logout successful.', 'Success');
+    } catch {
+      this.alertHelper.showError('Logout failed. Please try again.', 'Error');
+    }
   }
 
   private clearAuth(): void {

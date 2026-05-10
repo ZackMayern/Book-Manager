@@ -1,3 +1,5 @@
+using Back.Domain;
+
 namespace Back.Dal.Repository.Queries;
 
 public sealed class BooksQueriesRepository(ISupabaseClientService supabaseClientService) : IBookQueriesRepository
@@ -6,7 +8,7 @@ public sealed class BooksQueriesRepository(ISupabaseClientService supabaseClient
 
     public async Task<List<Book>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        List<Book> result = await _supabaseClientService.GetAllAsync<Book>("books", cancellationToken);
+        List<Book> result = await _supabaseClientService.GetAllAsync<Book>(Constants.Collection.Books, cancellationToken);
         return result;
     }
 }

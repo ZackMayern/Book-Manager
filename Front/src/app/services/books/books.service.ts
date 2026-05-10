@@ -22,7 +22,7 @@ export class BooksService {
 
   public get(id: string): Observable<Book> {
     const params: HttpParams = createHttpParams({ id: id });
-    return this.httpClient.get<Book>(`${this.url}/get`).pipe(
+    return this.httpClient.get<Book>(`${this.url}/get`, { params }).pipe(
       catchError(() => {
         return [];
       })

@@ -14,75 +14,24 @@
 
   <div class="table-wrap p-3">
     <h5>Borrow Monitoring</h5>
-    <table class="table table-dark table-striped table-hover align-middle">
-      <thead>
-      <tr>
-        <th>User</th>
-        <th>Book</th>
-        <th>Borrowed At</th>
-        <th>Due Date</th>
-        <th>Status</th>
-      </tr>
-      </thead>
-      <tbody>
-      @for (record of adminBorrows; track record.id) {
-        <tr>
-          <td>{{record.userFullName}}</td>
-          <td>{{record.bookTitle}}</td>
-          <td>{{record.borrowedAt | date:'mediumDate'}}</td>
-          <td>{{record.dueDate | date:'mediumDate'}}</td>
-          <td>
-            @if (record.status !== 'Returned' && isOverdue(record.dueDate)) {
-              <span class="badge text-bg-danger">Overdue</span>
-            } @else {
-              <span class="badge text-bg-secondary">{{record.status}}</span>
-            }
-          </td>
-        </tr>
-      }
-      @empty {
-        <tr>
-          <td colspan="5">No borrow records found.</td>
-        </tr>
-      }
-      </tbody>
-    </table>
+    <ag-grid-angular
+      style="height: 50vh;"
+      [theme]="theme"
+      [rowHeight]="rowHeight"
+      [rowData]="adminBorrows_()"
+      [gridOptions]="adminBorrowGridOptions">
+    </ag-grid-angular>
   </div>
 
   <div class="table-wrap p-3">
     <h5>Pending Book Requests</h5>
-    <table class="table table-dark table-striped table-hover align-middle">
-      <thead>
-      <tr>
-        <th>User</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Reason</th>
-        <th>Created</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      @for (request of pendingRequests; track request.id) {
-        <tr>
-          <td>{{request.userFullName}}</td>
-          <td>{{request.title}}</td>
-          <td>{{request.author}}</td>
-          <td>{{request.reason}}</td>
-          <td>{{request.createdAt | date:'mediumDate'}}</td>
-          <td>
-            <button type="button" class="btn btn-success btn-sm me-2" (click)="approveRequest(request.id)">Approve</button>
-            <button type="button" class="btn btn-danger btn-sm" (click)="rejectRequest(request.id)">Reject</button>
-          </td>
-        </tr>
-      }
-      @empty {
-        <tr>
-          <td colspan="6">No pending requests.</td>
-        </tr>
-      }
-      </tbody>
-    </table>
+    <ag-grid-angular
+      style="height: 50vh;"
+      [theme]="theme"
+      [rowHeight]="rowHeight"
+      [rowData]="pendingRequests_()"
+      [gridOptions]="pendingRequestsGridOptions">
+    </ag-grid-angular>
   </div>
 }
 
@@ -95,41 +44,12 @@
 
   <div class="table-wrap p-3">
     <h5>My Borrowed Books</h5>
-    <table class="table table-dark table-striped table-hover align-middle">
-      <thead>
-      <tr>
-        <th>Book</th>
-        <th>Borrowed At</th>
-        <th>Due Date</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      @for (record of myBorrows; track record.id) {
-        <tr>
-          <td>{{record.bookTitle}}</td>
-          <td>{{record.borrowedAt | date:'mediumDate'}}</td>
-          <td>{{record.dueDate | date:'mediumDate'}}</td>
-          <td>
-            @if (record.status !== 'Returned' && isOverdue(record.dueDate)) {
-              <span class="badge text-bg-danger">Overdue</span>
-            } @else {
-              <span class="badge text-bg-secondary">{{record.status}}</span>
-            }
-          </td>
-          <td>
-            <button type="button" class="btn btn-outline-info btn-sm me-2" (click)="renewBorrow(record.id)" [disabled]="record.status === 'Returned'">Renew</button>
-            <button type="button" class="btn btn-outline-warning btn-sm" (click)="returnBorrow(record.id)" [disabled]="record.status === 'Returned'">Return</button>
-          </td>
-        </tr>
-      }
-      @empty {
-        <tr>
-          <td colspan="5">You have no borrow records yet.</td>
-        </tr>
-      }
-      </tbody>
-    </table>
+    <ag-grid-angular
+      style="height: 50vh;"
+      [theme]="theme"
+      [rowHeight]="rowHeight"
+      [rowData]="myBorrows_()"
+      [gridOptions]="myBorrowsGridOptions">
+    </ag-grid-angular>
   </div>
 }

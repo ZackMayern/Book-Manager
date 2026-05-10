@@ -6,6 +6,7 @@ namespace Back.Domain.Models;
 [Table("Books")]
 public class Book : BaseModel
 {
+    [PrimaryKey]
     public string Id { get; set; } = string.Empty;
     public string Publisher { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
