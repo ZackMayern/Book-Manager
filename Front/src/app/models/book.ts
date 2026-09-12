@@ -6,7 +6,6 @@ export interface Book {
   title?: string;
   author?: string;
   yearOfPublication?: string;
-  bookCount?: number;
-  isAvailable?: boolean;
+  availability?: boolean;
   condition: ConditionType;
 }

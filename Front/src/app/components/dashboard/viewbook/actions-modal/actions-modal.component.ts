@@ -32,7 +32,7 @@ export class ActionsModalComponent implements OnInit {
     title: FormControl<string>;
     author: FormControl<string>;
     yearOfPublication: FormControl<string>;
-    bookCount: FormControl<number>;
+    availability: FormControl<boolean>;
     condition: FormControl<ConditionType>;
   }>;
 
@@ -47,7 +47,7 @@ export class ActionsModalComponent implements OnInit {
       title: new FormControl({ value: bookData?.title ?? '', disabled: this.disableWhenDelete() }, { nonNullable: true, validators: Validators.required }),
       author: new FormControl({ value: bookData?.author ?? '', disabled: this.disableWhenDelete() }, { nonNullable: true, validators: Validators.required }),
       yearOfPublication: new FormControl({ value: bookData?.yearOfPublication ?? '', disabled: this.disableWhenDelete() }, { nonNullable: true, validators: Validators.required }),
-      bookCount: new FormControl({ value: bookData?.bookCount ?? 0, disabled: this.disableWhenDelete() }, { nonNullable: true, validators: Validators.required }),
+      availability: new FormControl({ value: bookData?.availability ?? true, disabled: this.disableWhenDelete() }, { nonNullable: true, validators: Validators.required }),
       condition: new FormControl({ value: bookData?.condition ?? 'New', disabled: this.disableWhenDelete() }, { nonNullable: true })
     });
   }
@@ -59,7 +59,7 @@ export class ActionsModalComponent implements OnInit {
       title: this.actionsForm.controls.title.value,
       author: this.actionsForm.controls.author.value,
       yearOfPublication: this.actionsForm.controls.yearOfPublication.value,
-      bookCount: this.actionsForm.controls.bookCount.value,
+      availability: this.actionsForm.controls.availability.value,
       condition: this.actionsForm.controls.condition.value
     }
   }

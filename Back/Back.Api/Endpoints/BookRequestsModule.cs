@@ -74,13 +74,23 @@ public sealed class BookRequestsModule : IRouterModule
             return TypedResults.Ok(new List<BookRequestDto>());
 
         List<BookRequest> requests = await requestQueriesDomain.GetAllAsync(cancellationToken);
-        List<BookRequestDto> result = requests
+        
+        List<BookRequestDto> userRequests = requests
             .Where(r => r.UserId == user.Id)
             .OrderByDescending(r => r.CreatedAt)
             .Select(r => r.ToDto(user))
             .ToList();
 
-        return TypedResults.Ok(result);
+        if (!user.Roles.Contains("Admin"))
+            return TypedResults.Ok(userRequests);
+
+        List<User> users = (await userQueriesDomain.GetAllUsersAsync(cancellationToken)).ValueOrDefault ?? [];
+        List<BookRequestDto> allRequests = requests
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => r.ToDto(users.FirstOrDefault(u => u.Id == r.UserId)))
+            .ToList();
+
+        return TypedResults.Ok(allRequests);
     }
 
     private static async Task<Ok<List<BookRequestDto>>> GetPendingAsync(

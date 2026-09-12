@@ -27,6 +27,9 @@ public class LoggingMiddleware(RequestDelegate next, ILoggerService loggerServic
             {
                 await _next(context);
 
+                responseBody.Position = 0;
+                await responseBody.CopyToAsync(originalBodyStream);
+
                 stopwatch.Stop();
                 int statusCode = context.Response.StatusCode;
                 _loggerService.LogInformation($"[END]: {endpoint} - Completed in {stopwatch.ElapsedMilliseconds}ms with status {statusCode}");
@@ -39,8 +42,7 @@ public class LoggingMiddleware(RequestDelegate next, ILoggerService loggerServic
             }
             finally
             {
-                responseBody.Position = 0;
-                await responseBody.CopyToAsync(originalBodyStream);
+                context.Response.Body = originalBodyStream;
             }
         }
     }

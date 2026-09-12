@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MonitoringComponent } from "./monitoring/monitoring.component";
 import { ViewbookComponent } from "./viewbook/viewbook.component";
-import { RequestsComponent } from '../requests/requests.component';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MonitoringComponent, ViewbookComponent, RequestsComponent],
+  imports: [MonitoringComponent, ViewbookComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

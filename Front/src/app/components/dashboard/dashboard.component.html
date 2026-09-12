@@ -7,8 +7,5 @@
       <app-monitoring [isAdmin]="false"></app-monitoring>
     }
     <app-viewbook [isAdmin]="showAdminContent()"></app-viewbook>
-    @if(!showAdminContent()) {
-      <app-requests></app-requests>
-    }
   </div>
 </div>

@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
+import { UserService } from '../../../services/users/user.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -13,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class NavbarComponent implements OnInit {
   private readonly router: Router = inject(Router);
   private readonly authService: AuthService = inject(AuthService);
+  private readonly userService: UserService = inject(UserService);
 
   public collapsed: boolean = true;
   public isLoggedIn$ = this.authService.isAuthenticated$;
@@ -31,7 +33,9 @@ export class NavbarComponent implements OnInit {
   }
 
   public logout(): void {
-    this.authService.logout();
-    this.router.navigateByUrl('/login');
+    this.userService.logout().subscribe({
+      next: () => this.router.navigateByUrl('/login'),
+      error: () => this.router.navigateByUrl('/login')
+    });
   }
 }

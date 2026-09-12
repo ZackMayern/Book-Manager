@@ -110,6 +110,42 @@ public sealed class MongoDbService(IMongoDatabase database, ILoggerService logge
         }
     }
 
+    public async Task<T> GetByRefreshTokenAsync<T>(string collectionName, string refreshToken, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(collectionName))
+                throw new ArgumentNullException(nameof(collectionName));
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentNullException(nameof(refreshToken));
+
+            _logger.LogServiceInformation(collectionName, nameof(MongoDbService), nameof(GetByRefreshTokenAsync));
+            IMongoCollection<T> collection = _database.GetCollection<T>(collectionName);
+            T result = await collection.Find(Builders<T>.Filter.Eq("RefreshToken", refreshToken)).FirstOrDefaultAsync(cancellationToken);
+            return result;
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(ex, "[ERR]: Operation was cancelled");
+            throw;
+        }
+        catch (MongoConnectionException ex)
+        {
+            _logger.LogError(ex, "[ERR]: Database connection failed");
+            throw;
+        }
+        catch (ArgumentNullException ex)
+        {
+            _logger.LogError(ex, $"[ERR]: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"[ERR]: {ex.Message}");
+            throw;
+        }
+    }
+
     public async Task<Result<DatabaseEventType>> CreateAsync<T>(string collectionName, T document, CancellationToken cancellationToken = default)
     {
         try

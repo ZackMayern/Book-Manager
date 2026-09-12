@@ -69,12 +69,11 @@ export class ViewbookComponent {
       { headerName: 'Year Of Publishing', field: 'yearOfPublication', filter: true, floatingFilter: true, sort: 'desc' },
       {
         headerName: 'Availability',
-        valueGetter: ({ data }) => (data?.bookCount ?? 0) > 0 ? 'Yes' : 'No',
+        valueGetter: ({ data }) => (data?.availability === true) ? 'Yes' : 'No',
         filter: true,
         floatingFilter: true
       },
       { headerName: 'Condition', field: 'condition', filter: true, floatingFilter: true },
-      { headerName: 'Book Count', field: 'bookCount', filter: true, floatingFilter: true },
       { headerName: 'Actions', cellRenderer: ({ data }: { data: Book }) => this.renderActions(data)}
     ],
     autoSizeStrategy: {
@@ -105,7 +104,7 @@ export class ViewbookComponent {
 
     const btnBorrow = document.createElement('span');
     btnBorrow.className = 'px-1';
-    const isAvailable = (data.bookCount ?? 0) > 0;
+    const isAvailable = data.availability === true;
     btnBorrow.innerHTML = `<button class="btn btn-sm btn-outline-info" ${isAvailable ? '' : 'disabled'}>Borrow</button>`;
     if (isAvailable && data.id) {
       btnBorrow.addEventListener('click', () => this.borrowBook(data.id!));
@@ -126,7 +125,7 @@ export class ViewbookComponent {
     const modalRef = this.modalService.open(ActionsModalComponent, { scrollable: true, size: 'md', centered: true });
     const componentInstance = modalRef.componentInstance as ActionsModalComponent;
     componentInstance.actionType = 'Add';
-    
+
     modalRef.result.then(() => {
       this.refreshDataX_.set(new Date());
     })

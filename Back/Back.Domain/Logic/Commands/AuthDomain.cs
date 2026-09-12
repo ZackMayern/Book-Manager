@@ -40,6 +40,55 @@ public sealed class AuthDomain(IUserCommandsRepository commandsRepository, IUser
         return Result.Ok(token);
     }
 
+    public async Task<Result<Token>> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
+            return Result.Fail("Refresh token is required");
+
+        User? storedUser = await _queriesRepository.GetByRefreshTokenAsync(request.RefreshToken, cancellationToken);
+        if (storedUser == null || storedUser.RefreshTokenExpiry <= DateTime.UtcNow)
+            return Result.Fail("Refresh token is invalid or expired");
+
+        string accessToken = _tokenService.CreateAccessToken(storedUser);
+        string refreshToken = _tokenService.CreateRefreshToken();
+
+        storedUser.RefreshToken = refreshToken;
+        storedUser.RefreshTokenExpiry = DateTime.UtcNow.AddDays(1);
+
+        Result updateResult = await _commandsRepository.UpdateAsync(storedUser, cancellationToken);
+        if (updateResult.IsFailed)
+            return Result.Fail("Failed to update refresh token");
+
+        return Result.Ok(new Token
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            User = storedUser
+        });
+    }
+
+    public async Task<Result<User>> GetCurrentUserAsync(string email, CancellationToken cancellationToken = default)
+    {
+        User? storedUser = await _queriesRepository.GetByEmailAsync(email, cancellationToken);
+        return storedUser is null
+            ? Result.Fail<User>("User not found")
+            : Result.Ok(storedUser);
+    }
+
+    public async Task<Result> RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            return Result.Ok();
+
+        User? storedUser = await _queriesRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
+        if (storedUser is null)
+            return Result.Ok();
+
+        storedUser.RefreshToken = string.Empty;
+        storedUser.RefreshTokenExpiry = DateTime.MinValue;
+        return await _commandsRepository.UpdateAsync(storedUser, cancellationToken);
+    }
+
     public async Task<Result<string>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))

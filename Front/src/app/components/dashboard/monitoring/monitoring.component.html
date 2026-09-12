@@ -9,7 +9,6 @@
     <div class="col-md-4 col-lg-2">Borrowing Users: {{borrowedUsersCount}}</div>
     <div class="col-md-4 col-lg-2">Active Borrows: {{activeBorrowsCount}}</div>
     <div class="col-md-4 col-lg-2">Overdue Borrows: {{overdueBorrowsCount}}</div>
-    <div class="col-md-4 col-lg-2">Pending Requests: {{pendingRequestsCount}}</div>
   </div>
 
   <div class="table-wrap p-3">
@@ -22,21 +21,10 @@
       [gridOptions]="adminBorrowGridOptions">
     </ag-grid-angular>
   </div>
-
-  <div class="table-wrap p-3">
-    <h5>Pending Book Requests</h5>
-    <ag-grid-angular
-      style="height: 50vh;"
-      [theme]="theme"
-      [rowHeight]="rowHeight"
-      [rowData]="pendingRequests_()"
-      [gridOptions]="pendingRequestsGridOptions">
-    </ag-grid-angular>
-  </div>
 }
 
 @if (!isAdmin()) {
-  <h3 class="text-center">My Dashboard</h3>
+  <h3 class="text-center">Dashboard</h3>
   <div class="row p-3 g-3">
     <div class="col-md-4">Books Borrowed: {{activeBorrowsCount}}</div>
     <div class="col-md-4">Overdue: {{overdueBorrowsCount}}</div>

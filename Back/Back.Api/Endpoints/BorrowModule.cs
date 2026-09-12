@@ -46,10 +46,9 @@ public sealed class BorrowModule : IRouterModule
         if (book == null)
             return TypedResults.BadRequest("Book was not found");
 
-        if (book.BookCount <= 0)
+        if (!book.Availability)
             return TypedResults.BadRequest("Book is not available");
 
-        book.BookCount--;
         Result<DatabaseEventType> updateBookResult = await bookCommandsDomain.UpdateAsync(book, cancellationToken);
         if (updateBookResult.IsFailed)
             return TypedResults.BadRequest(updateBookResult.Errors.Select(e => e.Message).FirstOrDefault() ?? "Failed to update book");
@@ -94,7 +93,6 @@ public sealed class BorrowModule : IRouterModule
         if (book == null)
             return TypedResults.BadRequest("Book was not found");
 
-        book.BookCount++;
         Result<DatabaseEventType> updateBookResult = await bookCommandsDomain.UpdateAsync(book, cancellationToken);
         if (updateBookResult.IsFailed)
             return TypedResults.BadRequest(updateBookResult.Errors.Select(e => e.Message).FirstOrDefault() ?? "Failed to update book");

@@ -48,11 +48,9 @@ export class MonitoringComponent implements OnInit {
   public borrowedUsersCount: number = 0;
   public activeBorrowsCount: number = 0;
   public overdueBorrowsCount: number = 0;
-  public pendingRequestsCount: number = 0;
 
   public adminBorrows_ = signal<BorrowRecord[]>([]);
   public myBorrows_ = signal<BorrowRecord[]>([]);
-  public pendingRequests_ = signal<BookRequest[]>([]);
 
   public adminBorrowColDefs: ColDef<BorrowRecord>[] = [
     { field: 'userFullName', headerName: 'User', filter: true, floatingFilter: true },
@@ -82,37 +80,6 @@ export class MonitoringComponent implements OnInit {
 
   public adminBorrowGridOptions: GridOptions<BorrowRecord> = {
     columnDefs: this.adminBorrowColDefs,
-    rowData: [],
-    pagination: true,
-    paginationPageSize: 10,
-    autoSizeStrategy: {
-      type: 'fitGridWidth'
-    }
-  };
-
-  public pendingRequestsColDefs: ColDef<BookRequest>[] = [
-    { field: 'userFullName', headerName: 'User', filter: true, floatingFilter: true },
-    { field: 'title', headerName: 'Title', filter: true, floatingFilter: true },
-    { field: 'author', headerName: 'Author', filter: true, floatingFilter: true },
-    { field: 'reason', headerName: 'Reason', filter: true, floatingFilter: true },
-    {
-      field: 'createdAt',
-      headerName: 'Created',
-      filter: true,
-      floatingFilter: true,
-      valueFormatter: (params) => new Date(params.value).toLocaleDateString()
-    },
-    {
-      field: 'id',
-      headerName: 'Actions',
-      sortable: false,
-      filter: false,
-      cellRenderer: (params: any) => this.renderRequestActions(params.data)
-    }
-  ];
-
-  public pendingRequestsGridOptions: GridOptions<BookRequest> = {
-    columnDefs: this.pendingRequestsColDefs,
     rowData: [],
     pagination: true,
     paginationPageSize: 10,
@@ -285,14 +252,11 @@ export class MonitoringComponent implements OnInit {
   private loadAdminData(): void {
     combineLatest([
       this.userService.getAll(),
-      this.borrowService.getAll(),
-      this.requestsService.getPending()
+      this.borrowService.getAll()
     ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: ([users, borrows, requests]: [User[], BorrowRecord[], BookRequest[]]) => {
+      next: ([users, borrows]: [User[], BorrowRecord[]]) => {
         this.usersCount = users.length;
         this.adminBorrows_.set(borrows);
-        this.pendingRequests_.set(requests);
-        this.pendingRequestsCount = requests.length;
 
         const activeBorrows = borrows.filter(r => r.status !== 'Returned');
         this.activeBorrowsCount = activeBorrows.length;

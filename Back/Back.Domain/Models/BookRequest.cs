@@ -15,4 +15,5 @@ public class BookRequest : BaseModel
     public string Status { get; set; } = "Pending";
     public string AdminMessage { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 }

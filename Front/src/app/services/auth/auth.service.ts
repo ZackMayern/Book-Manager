@@ -21,34 +21,31 @@ export class AuthService {
   }
 
   private initializeAuth(): void {
-    const storedToken = localStorage.getItem('accessToken');
     const storedUser = localStorage.getItem('currentUser');
-    
-    if (storedToken && storedUser) {
-      this.accessToken = storedToken;
+
+    if (storedUser) {
       try {
-        const user = JSON.parse(storedUser);
+        const user = this.withoutPassword(JSON.parse(storedUser) as User);
         this.currentUserSubject.next(user);
-        this.isAuthenticatedSubject.next(true);
       } catch (error) {
         console.error('Failed to parse stored user:', error);
-        this.clearAuth();
+        localStorage.removeItem('currentUser');
       }
     }
   }
 
-  public setAuthData(accessToken: string, refreshToken: string, user: User): void {
+  public setAuthData(accessToken: string, user: User): void {
+    const safeUser = this.withoutPassword(user);
+
     this.accessToken = accessToken;
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    
-    this.currentUserSubject.next(user);
+    localStorage.setItem('currentUser', JSON.stringify(safeUser));
+
+    this.currentUserSubject.next(safeUser);
     this.isAuthenticatedSubject.next(true);
   }
 
   public getToken(): string | null {
-    return this.accessToken || localStorage.getItem('accessToken');
+    return this.accessToken;
   }
 
   public isLoggedIn(): boolean {
@@ -89,7 +86,13 @@ export class AuthService {
 
   public setAccessToken(token: string): void {
     this.accessToken = token;
-    localStorage.setItem('accessToken', token);
+  }
+
+  public setCurrentUser(user: User): void {
+    const safeUser = this.withoutPassword(user);
+    localStorage.setItem('currentUser', JSON.stringify(safeUser));
+    this.currentUserSubject.next(safeUser);
+    this.isAuthenticatedSubject.next(true);
   }
 
   public logout(): void {
@@ -103,11 +106,14 @@ export class AuthService {
 
   private clearAuth(): void {
     this.accessToken = null;
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
-    
+
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+  }
+
+  private withoutPassword(user: User): Omit<User, 'password'> {
+    const { password: _password, ...safeUser } = user;
+    return safeUser;
   }
 }

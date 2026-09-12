@@ -23,4 +23,10 @@ public class UserQueriesRepository(IMongoDbService mongoDbService) : IUserQuerie
         User result = await _mongoDbService.GetByEmailAsync<User>(Constants.Collection.Users, email, cancellationToken);
         return result;
     }
+
+    public async Task<User?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        User? result = await _mongoDbService.GetByRefreshTokenAsync<User>(Constants.Collection.Users, refreshToken, cancellationToken);
+        return result;
+    }
 }

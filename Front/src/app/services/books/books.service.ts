@@ -11,7 +11,7 @@ import { ArgumentNullException } from '../../helpers/argument-helper';
 export class BooksService {
   private readonly url = '/api/books';
   private readonly httpClient: HttpClient = inject(HttpClient);
-  
+
   public getAll(): Observable<Book[]> {
     return this.httpClient.get<Book[]>(`${this.url}/getAll`).pipe(
       catchError(() => {
@@ -47,7 +47,7 @@ export class BooksService {
     ArgumentNullException.ThrowIfNullOrUndefined(bookData.title, 'title');
     ArgumentNullException.ThrowIfNullOrUndefined(bookData.author, 'author');
     ArgumentNullException.ThrowIfNullOrUndefined(bookData.yearOfPublication, 'yop');
-    ArgumentNullException.ThrowIfNullOrUndefined(bookData.bookCount, 'bookCount');
+    ArgumentNullException.ThrowIfNullOrUndefined(bookData.availability, 'availability');
     ArgumentNullException.ThrowIfNullOrUndefined(bookData.condition, 'condition');
   }
   public validateWhenUpdateOrDelete(bookData: Book): void {

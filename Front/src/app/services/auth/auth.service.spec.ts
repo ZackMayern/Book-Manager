@@ -24,7 +24,7 @@ describe('AuthService', () => {
       isAdmin: false
     };
 
-    service.setAuthData(user, 'test-token', 'refresh-token');
+    service.setAuthData('test-token', user);
 
     expect(service.isLoggedIn()).toBe(true);
     expect(service.getToken()).toBe('test-token');
@@ -41,7 +41,7 @@ describe('AuthService', () => {
       isAdmin: false
     };
 
-    service.setAuthData(user, 'test-token', 'refresh-token');
+    service.setAuthData('test-token', user);
     service.logout();
 
     expect(service.isLoggedIn()).toBe(false);

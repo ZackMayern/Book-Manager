@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) {
+        if (err.status === 401 && !this.isRefreshRequest(req.url)) {
           return this.userService.refreshToken().pipe(
             switchMap(() => {
               const newReq = req.clone({

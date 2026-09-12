@@ -5,5 +5,8 @@ namespace Back.Domain.Abstractions.Domain;
 public interface IAuthDomain
 {
     Task<Result<Token>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
+    Task<Result<Token>> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default);
     Task<Result<string>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
+    Task<Result<User>> GetCurrentUserAsync(string email, CancellationToken cancellationToken = default);
+    Task<Result> RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
 }

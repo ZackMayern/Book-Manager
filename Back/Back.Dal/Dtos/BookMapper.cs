@@ -9,7 +9,7 @@ public static class BookMapper
         Title = book.Title,
         Author = book.Author,
         YearOfPublication = book.YearOfPublication,
-        BookCount = book.BookCount,
+        Availability = book.Availability,
         Condition = book.Condition
     };
 
@@ -20,7 +20,7 @@ public static class BookMapper
         Title = dto.Title,
         Author = dto.Author,
         YearOfPublication = dto.YearOfPublication,
-        BookCount = dto.BookCount,
+        Availability = dto.Availability,
         Condition = dto.Condition
     };
 }

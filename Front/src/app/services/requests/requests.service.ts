@@ -22,8 +22,8 @@ export class RequestsService {
     );
   }
 
-  public create(title: string, author: string, reason: string): Observable<BookRequest> {
-    return this.httpClient.post<BookRequest>(this.url, { title, author, reason });
+  public create(title: string, author: string, reason: string, userId: string, createdAt: Date): Observable<BookRequest> {
+    return this.httpClient.post<BookRequest>(this.url, { title, author, reason, userId, createdAt });
   }
 
   public approve(id: string, message: string): Observable<BookRequest> {

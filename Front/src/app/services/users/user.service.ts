@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { User } from '../../models/user';
 import { createHttpParams } from '../../helpers/http-utils';
 import { ArgumentNullException } from '../../helpers/argument-helper';
@@ -14,7 +14,7 @@ export class UserService {
   private readonly authUrl = '/api/auth';
   private readonly httpClient: HttpClient = inject(HttpClient);
   private readonly authService: AuthService = inject(AuthService);
-  
+
   public getAll(): Observable<User[]> {
     return this.httpClient.get<User[]>(`${this.userUrl}/get`).pipe(
       catchError(() => {
@@ -26,9 +26,9 @@ export class UserService {
   public login(credentials: User): Observable<any> {
     ArgumentNullException.ThrowIfNullOrUndefined(credentials.email, 'Email is invalid!');
     ArgumentNullException.ThrowIfNullOrUndefined(credentials.password, 'Password is invalid!');
-    return this.httpClient.post<any>(`${this.authUrl}/login`, credentials).pipe(
+    return this.httpClient.post<any>(`${this.authUrl}/login`, credentials, { withCredentials: true }).pipe(
       tap(res => {
-        this.authService.setAuthData(res.value.accessToken, res.value.refreshToken, res.value.user);
+        this.authService.setAuthData(res.value.accessToken, res.value.user);
       }),
       catchError((error) => {
         console.error('Login failed:', error);
@@ -52,10 +52,34 @@ export class UserService {
   }
 
   public refreshToken() {
-    const refreshToken = localStorage.getItem('refreshToken');
-    return this.httpClient.post<any>(`${this.authUrl}/refresh`, { refreshToken }).pipe(
+    return this.httpClient.post<any>(`${this.authUrl}/refresh`, {}, { withCredentials: true }).pipe(
       tap(res => {
-        this.authService.setAccessToken(res.accessToken);
+        this.authService.setAuthData(res.value.accessToken, res.value.user);
+      }),
+      catchError(error => {
+        this.authService.logout();
+        return throwError(() => error);
+      })
+    );
+  }
+
+  public loadCurrentUser() {
+    return this.httpClient.get<any>(`${this.authUrl}/me`).pipe(
+      tap(res => this.authService.setCurrentUser(res.value))
+    );
+  }
+
+  public ensureSession(): Observable<boolean> {
+    const session$ = this.authService.isLoggedIn()
+      ? of(null)
+      : this.refreshToken();
+
+    return session$.pipe(
+      switchMap(() => this.loadCurrentUser()),
+      map(() => true),
+      catchError(() => {
+        this.authService.logout();
+        return of(false);
       })
     );
   }
@@ -69,7 +93,9 @@ export class UserService {
   }
 
   public logout() {
-    this.authService.logout();
+    return this.httpClient.post(`${this.authUrl}/logout`, {}, { withCredentials: true }).pipe(
+      finalize(() => this.authService.logout())
+    );
   }
 
   public validateWhenAddorUpdate(userData: User): void {
@@ -78,7 +104,7 @@ export class UserService {
     ArgumentNullException.ThrowIfNullOrUndefined(userData.lastName, 'lastName is invalid!');
     ArgumentNullException.ThrowIfNullOrUndefined(userData.password, 'password is invalid!');
   }
-  
+
   public validateWhenUpdateOrDelete(userData: User): void {
     ArgumentNullException.ThrowIfNullOrUndefined(userData.id, 'id is invalid!');
   }

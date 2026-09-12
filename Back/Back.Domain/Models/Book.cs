@@ -12,6 +12,6 @@ public class Book : BaseModel
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public string YearOfPublication { get; set; } = string.Empty;
-    public int BookCount { get; set; }
+    public bool Availability { get; set; } = true;
     public string Condition { get; set; } = string.Empty;
 }
